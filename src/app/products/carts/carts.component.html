@@ -1,0 +1,158 @@
+<!-- empty cart -->
+<div *ngIf="allproducts.length==0" class="container mt-5">
+    <div class="row">
+        <div class="col text-center mt-5">
+            <img src="https://img.freepik.com/free-photo/3d-man-with-shopping-cart-blank-screen-tablet_1401-15.jpg?t=st=1687022053~exp=1687022653~hmac=5c3bc3cb514765f37f66c6cb05c01224c416ee2bde6c1ce35d4797d66108e678" alt="empty wishlist">
+            <h3 class="text-danger mt-3">Your cart is Empty</h3>
+            <a routerLink="" class="btn btn-success">shop More</a>
+
+        </div>
+    </div>
+</div>
+<!-- cart with items -->
+<div *ngIf="allproducts.length!=0" class="container mt-5">
+    <div class="row mt-5">
+        <h3 style="margin-top:100px;" class="text-primary  text-decorator-underline">
+        Cart summary
+        </h3>
+        <div class="col-lg-7 border p-3 rounded me-1 mt-3">
+         <!-- cart table -->
+         <table class="table">
+            <thead>
+                <th>No</th>
+                <th>Name</th>
+                <th>Image</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Action</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let product of allproducts ; let i=index ">
+                    <th>{{i+1}}</th>
+                    <th>{{product.title.slice(0,20)}}</th>
+                    <th class="align-items-center">
+                        <img width="70px" height="70px"[src]="product.image" [alt]="product.title">
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <!-- decrement btn -->
+                            <button (click)="decrItem(product.id)" class="btn fw-bolder">-</button>
+                            <!-- quantity box -->
+                            <input class="form-control text-center " id="inputQuantity" type="name" [value]="product.quantity"  style="max-width:3rem" readonly/>
+                            <!-- increment btn -->
+                            <button (click)="incrItem(product.id)" class="btn fw-bolder">+</button>
+
+                        </div>
+                    </th>
+                    <th>{{product.total}}</th>
+                    <th>
+                        <!-- delete an item -->
+                        <i (click)="removeitem(product.id)" class="fa-solid fa-trash text-danger icon btn"></i>
+                    </th>
+                </tr>
+            </tbody>
+
+         </table>
+         <!-- more cart actions -->
+         <div class="d-flex justify-content-end">
+            <!-- empty cart btn -->
+            <button (click)="emptycart()" class="btn btn-danger me-3"><i class="fa-solid fa-trash fa-shake me-1"></i>Empty Cart</button>
+            <!-- shop  more link-->
+            <a routerLink="" class="btn btn-success"><i class="fa-solid fa-cart-plus fa-shake me-1"></i>shop More</a>
+         </div>
+        </div>
+        <div class="col-lg-4 ms-auto mt-3">
+         <div class="border p-3 rounded">
+            <h5>Sub Total: <span class="fw-bolder fs-2 text-danger">{{totalCartAmount}}</span></h5>
+            <hr>
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                   Proceed To Buy</button>
+            </div>
+
+         </div>
+        </div>
+
+    </div>
+
+</div>
+<!-- proceed to buy -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Check Out Form</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <h3 class="text-primary">Delivery Address</h3>
+            <!-- initially div with delivery details -->
+            <div *ngIf="!checkoutClickStatus">
+         <form  [formGroup]="addressForm">
+            <div class="form-floating mb-3">
+                <input name="username" formControlName="username" class="form-control" id="floatingInputname" placeholder="Name" required>
+                <label for="floatingInput">Name</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input name="flatno"formControlName="flatno" class="form-control" id="floatingInputno" placeholder="flat no." required>
+                <label for="floatingInput">Appartment no. / flat no</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input name="state" formControlName="state" class="form-control" id="floatingInputstate" placeholder="state" required>
+                <label for="floatingInput">State</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input name="pincode" formControlName="pincode" class="form-control" id="floatingInputpin" placeholder="Pincode" required>
+                <label for="floatingInput">Pincode</label>
+              </div>
+         </form>
+        </div>
+        <!-- div payment details -->
+        <div *ngIf="checkoutClickStatus" >
+            <h5 class="text-primary">Payment Details</h5>
+            <h4 class="">Delivery Address </h4>
+            <p>{{username}}</p>
+            <p>{{flat}}</p>
+            <p>{{state}},{{pincode}}</p>
+            
+            <div *ngIf="!paymentStatus" class="d-flex justify-content-between align-items-center">
+                <h4>Total Amount:<span class="fw-bolder text-danger">${{totalCartAmount}}</span></h4>
+                <button  *ngIf="!offerbtnclickstatus" (click)="offerClick()" class="btn text-success"><i class="fa-solid fa-tag"></i>offers</button>
+            </div>
+            <!-- offer div  -->
+            <ng-container *ngIf="!couponClicked">
+                <div *ngIf="offerbtnclickstatus" >
+                    <!-- discount 10% -->
+                    <img *ngIf="totalCartAmount>10 && totalCartAmount<500" width="100px" height="70px" (click)="discount10()" src="https://img.freepik.com/premium-photo/ten-percent-white-space-isolated-3d-illustration_356060-945.jpg?size=626&ext=jpg&ga=GA1.1.215291654.1685931873&semt=ais" alt="10% coupon">
+                    <!-- discount 50% -->
+                    <img *ngIf="totalCartAmount>=500" width="100px" height="70px" (click)="discount50()" src="https://img.freepik.com/free-vector/flat-cartoon-character-customer-50-percent-discount-with-coupon_1150-34875.jpg?size=626&ext=jpg&ga=GA1.2.215291654.1685931873&semt=ais" alt="10% coupon">
+                </div>
+            </ng-container>
+          </div>
+        </div>
+         <!-- show success -->
+            <div *ngIf="showSuccess">
+                <p class="fw-bolder fs-3 text-success">Payment completed successfully . Order has already placed.Thank you</p>
+            </div>
+        <!-- show cancel -->
+        <div *ngIf="showCancel">
+            <p class="fw-bolder fs-3 text-danger">Transaction has been cancelled successfully.You can make payment after 5 seconds</p>
+         </div>
+         <!-- show error -->
+         <div *ngIf="showError">
+            <p class="fw-bolder fs-3 text-danger">Transaction Failed.Try again after 5 seconds time.You can make another payment after 5 seconds</p>
+         </div>
+
+        <div *ngIf="showmodalFooter" class="modal-footer">
+          <button *ngIf="!checkoutClickStatus" (click)="checkOut()" type="button" class="btn btn-success">CheckOut</button>
+    <ng-container *ngIf="!showPaypal">   
+            <button *ngIf="checkoutClickStatus" (click)="makePayment()" type="button" class="btn btn-primary">Make Payment</button>
+    </ng-container>
+    <div *ngIf="checkoutClickStatus" class="m-5">
+            <!-- paypal -->
+            <ngx-paypal *ngIf="showPaypal" [config]="payPalConfig"></ngx-paypal>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>

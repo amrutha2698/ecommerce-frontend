@@ -1,0 +1,26 @@
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { AllProductsComponent } from './all-products/all-products.component';
+import { ViewProductComponent } from './view-product/view-product.component';
+import { WishlistComponent } from './wishlist/wishlist.component';
+import { CartsComponent } from './carts/carts.component';
+
+const routes: Routes = [
+{ path: '', component: AllProductsComponent 
+},
+{
+  path:'view-product/:id',component:ViewProductComponent
+},
+{
+  path:'wishlist',component:WishlistComponent
+},
+{
+  path:'carts',component:CartsComponent
+},
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class ProductsRoutingModule { }
